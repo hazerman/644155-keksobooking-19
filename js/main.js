@@ -66,7 +66,8 @@
       var newValues = [];
       for (var i = 0; i < values.length; i++) {
         // так как новый массив должен быть случайной длины, то рандом либо закидывает из исходного массива значение, либо нет
-        if (Math.round(Math.random())) {
+        var willBePushed = Math.round(Math.random()); // true or false random
+        if (willBePushed) {
           newValues.push(values[i]);
         }
       }
@@ -100,7 +101,7 @@
         },
         location: {
           x: getRandomValue(PIN_MIN_X, pinMaxX),
-          y: getRandomValue(PIN_MIN_Y + PIN_HEIGHT, PIN_MAX_Y + PIN_HEIGHT)
+          y: getRandomValue(PIN_MIN_Y, PIN_MAX_Y)
         }
       };
       objectCardTemplate.offer.address = objectCardTemplate.location.x + ', ' + objectCardTemplate.location.y;
