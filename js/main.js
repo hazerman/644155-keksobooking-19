@@ -53,7 +53,9 @@
   ];
   var map = document.querySelector('.map');
   var mapPinsArea = map.querySelector('.map__pins');
+  var mapFiltersContainer = map.querySelector('.map__filters-container');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var pinMaxX = mapPinsArea.offsetWidth;
 
   var getRandomValue = function (min, max, values, needArrayAsResult) {
@@ -120,13 +122,71 @@
     return pinElement;
   };
 
+  var renderCard = function (card) {
+    var cardElement = mapCardTemplate.cloneNode(true);
+    cardElement.querySelector('.popup__avatar').src = card.author.avatar;
+    cardElement.querySelector('.popup__title').textContent = card.offer.title;
+    cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
+    cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
+    var typeTranslated;
+    if (card.offer.type === 'palace') {
+      typeTranslated = 'Дворец';
+    } else if (card.offer.type === 'flat') {
+      typeTranslated = 'Квартира';
+    } else if (card.offer.type === 'house') {
+      typeTranslated = 'Дом';
+    } else if (card.offer.type === 'bungalo') {
+      typeTranslated = 'Бунгало';
+    }
+    cardElement.querySelector('.popup__type').textContent = typeTranslated;
+    cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
+    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+    var featureList = cardElement.querySelector('.popup__features');
+    var featureItems = featureList.querySelectorAll('.popup__feature');
+    if (card.offer.features.length) {
+      for (var i = 0; i < featureItems.length; i++) { // внешний цикл для элементов списка
+        var counterForMissingClasses = 0; // счётчик отсутствия классов у элемента списка
+        for (var j = 0; j < card.offer.features.length; j++) { // внутренний цикл, для проверки наличия класса у элемента списка
+          var featureItemClassName = 'popup__feature--' + card.offer.features[j]; // элемент списка проверяем на наличие этого класса
+          if (!featureItems[i].classList.contains(featureItemClassName)) {
+            counterForMissingClasses++; // если класс остутсвует, то счетчик увеличивается
+          }
+        }
+        if (counterForMissingClasses === card.offer.features.length) { // если у элемента списка нет ни одного класса, то удалеям элемент
+          featureItems[i].remove();
+        }
+      }
+    } else {
+      featureList.style.display = 'none';
+    }
+    cardElement.querySelector('.popup__description').textContent = card.offer.description;
+    var photoList = cardElement.querySelector('.popup__photos');
+    var photoItemTemplate = photoList.querySelector('.popup__photo');
+    if (card.offer.photos.length) {
+      var fragmentForPhotos = document.createDocumentFragment();
+      photoItemTemplate.src = card.offer.photos[0];
+      for (var k = 1; k < card.offer.photos.length; k++) {
+        var photoItem = photoItemTemplate.cloneNode(true);
+        photoItem.src = card.offer.photos[k];
+        fragmentForPhotos.appendChild(photoItem);
+      }
+      photoList.appendChild(fragmentForPhotos);
+    } else {
+      photoList.style.display = 'none';
+    }
+    return cardElement;
+  };
+
   var cards = generateArrayOfCards(8);
   map.classList.remove('map--faded');
-  var fragment = document.createDocumentFragment();
+  var fragmentForPin = document.createDocumentFragment();
   for (var i = 0; i < cards.length; i++) {
     if ('offer' in cards[i]) {
-      fragment.appendChild(renderPin(cards[i]));
+      fragmentForPin.appendChild(renderPin(cards[i]));
     }
   }
-  mapPinsArea.appendChild(fragment);
+  mapPinsArea.appendChild(fragmentForPin);
+  var fragmentForCard = document.createDocumentFragment();
+  fragmentForCard.appendChild(renderCard(cards[0]));
+  mapFiltersContainer.before(fragmentForCard);
 })();
