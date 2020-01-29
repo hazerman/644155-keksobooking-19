@@ -145,14 +145,14 @@
     var featureItems = featureList.querySelectorAll('.popup__feature');
     if (card.offer.features.length) {
       for (var i = 0; i < featureItems.length; i++) { // внешний цикл для элементов списка
-        var counterForMissingClasses = 0; // счётчик отсутствия классов у элемента списка
+        var isItemContainsClass = false; // булева переменная, отвечающая на вопрос: содержится ли нужный класс в элементе списка
         for (var j = 0; j < card.offer.features.length; j++) { // внутренний цикл, для проверки наличия класса у элемента списка
           var featureItemClassName = 'popup__feature--' + card.offer.features[j]; // элемент списка проверяем на наличие этого класса
-          if (!featureItems[i].classList.contains(featureItemClassName)) {
-            counterForMissingClasses++; // если класс остутсвует, то счетчик увеличивается
+          if (featureItems[i].classList.contains(featureItemClassName)) {
+            isItemContainsClass = true; // если класс присутствует, то true
           }
         }
-        if (counterForMissingClasses === card.offer.features.length) { // если у элемента списка нет ни одного класса, то удалеям элемент
+        if (!isItemContainsClass) { // если у элемента списка нет ни одного нужного класса, то удаляем элемент
           featureItems[i].remove();
         }
       }
