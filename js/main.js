@@ -51,6 +51,12 @@
     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
   ];
+  var typeTranslated = {
+    palace: 'Дворец',
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
   var map = document.querySelector('.map');
   var mapPinsArea = map.querySelector('.map__pins');
   var mapFiltersContainer = map.querySelector('.map__filters-container');
@@ -122,40 +128,40 @@
     return pinElement;
   };
 
+  var displayFeatures = function (list, items, features) {
+    for (var i = 0; i < items.length; i++) {
+      items[i].style.display = 'none';
+    }
+    for (var j = 0; j < features.length; j++) {
+      var featureItemClassName = '.popup__feature--' + features[j];
+      list.querySelector(featureItemClassName).style.display = 'inline-block';
+    }
+  };
+
+  var displayPhotos = function (list, itemTemplate, photos) {
+    var fragmentForPhotos = document.createDocumentFragment();
+    for (var i = 0; i < photos.length; i++) {
+      var item = itemTemplate.cloneNode(true);
+      item.src = photos[i];
+      fragmentForPhotos.appendChild(item);
+    }
+    itemTemplate.remove();
+    list.appendChild(fragmentForPhotos);
+  };
+
   var renderCard = function (card) {
     var cardElement = mapCardTemplate.cloneNode(true);
     cardElement.querySelector('.popup__avatar').src = card.author.avatar;
     cardElement.querySelector('.popup__title').textContent = card.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-    var typeTranslated;
-    if (card.offer.type === 'palace') {
-      typeTranslated = 'Дворец';
-    } else if (card.offer.type === 'flat') {
-      typeTranslated = 'Квартира';
-    } else if (card.offer.type === 'house') {
-      typeTranslated = 'Дом';
-    } else if (card.offer.type === 'bungalo') {
-      typeTranslated = 'Бунгало';
-    }
-    cardElement.querySelector('.popup__type').textContent = typeTranslated;
+    cardElement.querySelector('.popup__type').textContent = typeTranslated[card.offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     var featureList = cardElement.querySelector('.popup__features');
     var featureItems = featureList.querySelectorAll('.popup__feature');
     if (card.offer.features.length) {
-      for (var i = 0; i < featureItems.length; i++) { // внешний цикл для элементов списка
-        var isItemContainsClass = false; // булева переменная, отвечающая на вопрос: содержится ли нужный класс в элементе списка
-        for (var j = 0; j < card.offer.features.length; j++) { // внутренний цикл, для проверки наличия класса у элемента списка
-          var featureItemClassName = 'popup__feature--' + card.offer.features[j]; // элемент списка проверяем на наличие этого класса
-          if (featureItems[i].classList.contains(featureItemClassName)) {
-            isItemContainsClass = true; // если класс присутствует, то true
-          }
-        }
-        if (!isItemContainsClass) { // если у элемента списка нет ни одного нужного класса, то удаляем элемент
-          featureItems[i].remove();
-        }
-      }
+      displayFeatures(featureList, featureItems, card.offer.features);
     } else {
       featureList.style.display = 'none';
     }
@@ -163,14 +169,7 @@
     var photoList = cardElement.querySelector('.popup__photos');
     var photoItemTemplate = photoList.querySelector('.popup__photo');
     if (card.offer.photos.length) {
-      var fragmentForPhotos = document.createDocumentFragment();
-      photoItemTemplate.src = card.offer.photos[0];
-      for (var k = 1; k < card.offer.photos.length; k++) {
-        var photoItem = photoItemTemplate.cloneNode(true);
-        photoItem.src = card.offer.photos[k];
-        fragmentForPhotos.appendChild(photoItem);
-      }
-      photoList.appendChild(fragmentForPhotos);
+      displayPhotos(photoList, photoItemTemplate, card.offer.photos);
     } else {
       photoList.style.display = 'none';
     }
