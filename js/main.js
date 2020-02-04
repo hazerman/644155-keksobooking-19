@@ -300,20 +300,8 @@
     showInvalidField(evt.target);
   });
 
-  adFormTitleInput.addEventListener('blur', function (evt) {
-    if (evt.target.validity.valid) {
-      resetInvalidField(evt.target);
-    }
-  });
-
   adFormPriceInput.addEventListener('invalid', function (evt) {
     showInvalidField(evt.target);
-  });
-
-  adFormPriceInput.addEventListener('blur', function (evt) {
-    if (evt.target.validity.valid) {
-      resetInvalidField(evt.target);
-    }
   });
 
   adFormTypeSelect.addEventListener('input', function () {
@@ -328,11 +316,8 @@
     setLinkBetweenTime('out');
   });
 
-  adFormCapacitySelect.addEventListener('input', function (evt) {
+  adFormCapacitySelect.addEventListener('input', function () {
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
-    if (evt.target.validity.valid) {
-      resetInvalidField(evt.target);
-    }
   });
 
   adFormCapacitySelect.addEventListener('invalid', function (evt) {
@@ -341,6 +326,14 @@
 
   adFormRoomNumberSelect.addEventListener('input', function () {
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
+  });
+
+  adForm.addEventListener('change', function (evt) {
+    if (evt.target.validity.valid) {
+      resetInvalidField(evt.target);
+    } else {
+      showInvalidField(evt.target);
+    }
   });
 
   disableFormElements(mapFormInputs);
