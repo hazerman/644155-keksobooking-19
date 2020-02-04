@@ -2,6 +2,7 @@
 
 (function () {
   var KEY_ENTER = 13;
+  var KEY_ESC = 27;
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
   var PIN_MIN_Y = 130;
@@ -92,6 +93,11 @@
   var pinMainWidth = mapPinMain.offsetWidth;
   var pinMainHeight = pinMainWidth;
   var pinMainArrowHeight = 16;
+  var cardObjects = [];
+  var cardElements = [];
+  var pinButtons = [];
+  var previousPinButton;
+  var previousCard;
 
   var disableFormElements = function (collection) {
     for (var i = 0; i < collection.length; i++) {
@@ -270,7 +276,9 @@
   };
 
   var makePageActive = function () {
+    mapPinMain.removeEventListener('mousedown', mapPinMainClickHandler);
     map.classList.remove('map--faded');
+    cardObjects = generateArrayOfCards(8);
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
@@ -278,17 +286,70 @@
     adFromAddressInput.setAttribute('readonly', '');
     adFromAddressInput.value = getAddressFromMainPin(true);
     var fragmentForPin = document.createDocumentFragment();
-    for (var i = 0; i < cards.length; i++) {
-      if ('offer' in cards[i]) {
-        fragmentForPin.appendChild(renderPin(cards[i]));
+    for (var i = 0; i < cardObjects.length; i++) {
+      if ('offer' in cardObjects[i]) {
+        fragmentForPin.appendChild(renderPin(cardObjects[i]));
       }
     }
+    pinButtons = fragmentForPin.querySelectorAll('.map__pin');
     mapPinsArea.appendChild(fragmentForPin);
+    var fragmentForCard = document.createDocumentFragment();
+    for (var k = 0; k < cardObjects.length; k++) {
+      fragmentForCard.appendChild(renderCard(cardObjects[k]));
+    }
+    cardElements = fragmentForCard.querySelectorAll('.map__card');
   };
 
-  mapPinMain.addEventListener('mousedown', function () {
+  var removeCard = function () {
+    document.removeEventListener('keydown', documentEscKeyHandler);
+    previousPinButton.classList.remove('map__pin--active');
+    previousCard.remove();
+    previousCard = null;
+    previousPinButton = null;
+  };
+
+  var showCard = function (button) {
+    var currentButton;
+    var indexOfCard;
+    if (previousPinButton) {
+      removeCard();
+    }
+    for (var i = 0; i < pinButtons.length; i++) {
+      if (button === pinButtons[i]) {
+        currentButton = pinButtons[i];
+        currentButton.classList.add('map__pin--active');
+        indexOfCard = i;
+        var currentCard = cardElements[indexOfCard].cloneNode(true);
+        currentCard.querySelector('.popup__close').addEventListener('click', function () {
+          removeCard();
+        });
+        document.addEventListener('keydown', documentEscKeyHandler);
+        mapFiltersContainer.before(currentCard);
+        break;
+      }
+    }
+    previousPinButton = currentButton;
+    previousCard = currentCard;
+  };
+
+  var mapPinMainClickHandler = function () {
     makePageActive();
+  };
+
+  var documentEscKeyHandler = function (evt) {
+    if (evt.keyCode === KEY_ESC) {
+      removeCard();
+    }
+  };
+
+  mapPinsArea.addEventListener('click', function (evt) {
+    var target = evt.target.closest('button');
+    if (target !== mapPinMain && target) {
+      showCard(target);
+    }
   });
+
+  mapPinMain.addEventListener('mousedown', mapPinMainClickHandler);
 
   mapPinMain.addEventListener('keydown', function (evt) {
     if (evt.keyCode === KEY_ENTER) {
@@ -342,9 +403,4 @@
   adFromAddressInput.value = getAddressFromMainPin(false);
   setLinkBetweenTypeAndPrice();
   adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
-
-  var cards = generateArrayOfCards(8);
-  var fragmentForCard = document.createDocumentFragment();
-  fragmentForCard.appendChild(renderCard(cards[0]));
-  // mapFiltersContainer.before(fragmentForCard);
 })();
