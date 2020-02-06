@@ -9,6 +9,7 @@
 
   var makePageActive = function () {
     mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
+    mapPinMain.removeEventListener('keydown', mapPinMainEnterKeyHandler);
 
     cardObjects = window.data.generateArrayOfCards(NUMBER_OF_CARDS);
 
@@ -20,13 +21,15 @@
     makePageActive();
   };
 
-  mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
-
-  mapPinMain.addEventListener('keydown', function (evt) {
+  var mapPinMainEnterKeyHandler = function (evt) {
     if (evt.keyCode === KEY_ENTER) {
       makePageActive();
     }
-  });
+  };
+
+  mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
+
+  mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
 
   window.form.makeFormPrimarySettings();
 })();
