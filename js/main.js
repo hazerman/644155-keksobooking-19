@@ -11,6 +11,7 @@
     mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
     mapPinMain.removeEventListener('keydown', mapPinMainEnterKeyHandler);
 
+
     cardObjects = window.data.generateArrayOfCards(NUMBER_OF_CARDS);
 
     window.form.makeFormActive();
@@ -26,6 +27,7 @@
       makePageActive();
     }
   };
+  window.dragNDrop.move(mapPinMain, window.form.setAddress);
 
   mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
 
