@@ -9,6 +9,7 @@
   var pinMainWidth = mapPinMain.offsetWidth;
   var pinMainHeight = pinMainWidth;
   var pinMainArrowHeight = 16;
+  var pinMainFullHeight = pinMainHeight + pinMainArrowHeight;
   var cardElements = [];
   var pinButtons = [];
   var previousPinButton;
@@ -19,7 +20,7 @@
     var left = parseInt(mapPinMain.style.left, 10);
     var top = parseInt(mapPinMain.style.top, 10);
     if (isActive) {
-      address = Math.round(left + pinMainWidth / 2) + ', ' + Math.round(top + pinMainHeight + pinMainArrowHeight);
+      address = Math.round(left + pinMainWidth / 2) + ', ' + Math.round(top + pinMainFullHeight);
     } else {
       address = Math.round(left + pinMainWidth / 2) + ', ' + Math.round(top + pinMainHeight / 2);
     }
@@ -90,6 +91,8 @@
     }
     cardElements = fragmentForCard.querySelectorAll('.map__card');
   };
+
+  window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, window.form.setAddress);
 
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,

@@ -1,9 +1,19 @@
 'use strict';
 
 (function () {
-  var move = function (element, callback) {
+  var map = document.querySelector('.map');
+  var mapPinsArea = map.querySelector('.map__pins');
+  var AreaLimit = {
+    MIN_Y: 130,
+    MAX_Y: 630,
+    MIN_X: 0,
+    MAX_X: mapPinsArea.offsetWidth
+  };
+
+  var activate = function (element, width, height, callback) {
     element.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
+      var halfWidth = Math.round(width / 2);
       var target = evt.target.closest('button');
       var startCoordinates = {
         x: evt.clientX,
@@ -13,68 +23,61 @@
         minX: -Infinity,
         maxX: Infinity,
         minY: -Infinity,
-        maxY: Infinity
+        maxY: Infinity,
+        isOverMinX: false,
+        isOverMaxX: false,
+        isOverMinY: false,
+        isOverMaxY: false,
       };
-
       var mouseMoveHandler = function (moveEvt) {
         moveEvt.preventDefault();
-
         var shift = {
           x: startCoordinates.x - moveEvt.clientX,
           y: startCoordinates.y - moveEvt.clientY,
         };
-
         var left = parseInt(target.style.left, 10) - shift.x;
         var top = parseInt(target.style.top, 10) - shift.y;
-
         startCoordinates = {
           x: moveEvt.clientX,
           y: moveEvt.clientY
         };
-
-        if (moveEvt.clientX < overArea.minX || moveEvt.clientX > overArea.maxX || moveEvt.clientY < overArea.minY || moveEvt.clientY > overArea.maxY) {
-          if (moveEvt.clientX < overArea.minX) {
-            target.style.left = (-(element.offsetWidth / 2)) + 'px';
-            target.style.top = top + 'px';
-            startCoordinates.x = overArea.minX;
-            startCoordinates.y = moveEvt.clientY;
-          } else if (moveEvt.clientX > overArea.maxX) {
-            target.style.left = (1200 - element.offsetWidth / 2) + 'px';
-            target.style.top = top + 'px';
-            startCoordinates.x = overArea.maxX;
-            startCoordinates.y = moveEvt.clientY;
-          }
-          if (moveEvt.clientY < overArea.minY) {
-            target.style.left = left + 'px';
-            target.style.top = (130 - element.offsetWidth - 16) + 'px';
-            startCoordinates.x = moveEvt.clientX;
-            startCoordinates.y = overArea.minY;
-          } else if (moveEvt.clientY > overArea.maxY) {
-            target.style.left = left + 'px';
-            target.style.top = (630 - element.offsetWidth - 16) + 'px';
-            startCoordinates.x = moveEvt.clientX;
-            startCoordinates.y = overArea.maxY;
-          }
-        } else {
-          if (left < -(element.offsetWidth / 2)) {
-            target.style.left = (-(element.offsetWidth / 2)) + 'px';
+        if (left < (AreaLimit.MIN_X - halfWidth)) {
+          target.style.left = (AreaLimit.MIN_X - halfWidth) + 'px';
+          if (!AreaLimit.isOverMinX) {
             overArea.minX = moveEvt.clientX;
-          } else if (left > 1200 - element.offsetWidth / 2) {
-            target.style.left = (1200 - element.offsetWidth / 2) + 'px';
+            AreaLimit.isOverMinX = true;
+          }
+          startCoordinates.x = overArea.minX;
+        } else if (left > (AreaLimit.MAX_X - width / 2)) {
+          target.style.left = (AreaLimit.MAX_X - halfWidth) + 'px';
+          if (!AreaLimit.isOverMaxX) {
             overArea.maxX = moveEvt.clientX;
-          } else {
-            target.style.left = left + 'px';
+            AreaLimit.isOverMaxX = true;
           }
-
-          if (top < 130 - element.offsetWidth - 16) {
-            target.style.top = (130 - element.offsetWidth - 16) + 'px';
+          startCoordinates.x = overArea.maxX;
+        } else {
+          target.style.left = left + 'px';
+          AreaLimit.isOverMinX = false;
+          AreaLimit.isOverMaxX = false;
+        }
+        if (top < (AreaLimit.MIN_Y - height)) {
+          target.style.top = (AreaLimit.MIN_Y - height) + 'px';
+          if (!AreaLimit.isOverMinY) {
             overArea.minY = moveEvt.clientY;
-          } else if (top > 630 - element.offsetWidth - 16) {
-            target.style.top = (630 - element.offsetWidth - 16) + 'px';
-            overArea.maxY = moveEvt.clientY;
-          } else {
-            target.style.top = top + 'px';
+            AreaLimit.isOverMinY = true;
           }
+          startCoordinates.y = overArea.minY;
+        } else if (top > (AreaLimit.MAX_Y - height)) {
+          target.style.top = (AreaLimit.MAX_Y - height) + 'px';
+          if (!AreaLimit.isOverMaxY) {
+            overArea.maxY = moveEvt.clientY;
+            AreaLimit.isOverMaxY = true;
+          }
+          startCoordinates.y = overArea.maxY;
+        } else {
+          target.style.top = top + 'px';
+          AreaLimit.isOverMinY = false;
+          AreaLimit.isOverMaxY = false;
         }
         callback();
       };
@@ -91,6 +94,6 @@
   };
 
   window.dragNDrop = {
-    move: move,
+    activate: activate,
   };
 })();

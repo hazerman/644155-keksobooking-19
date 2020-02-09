@@ -27,7 +27,7 @@
       makePageActive();
     }
   };
-  window.dragNDrop.move(mapPinMain, window.form.setAddress);
+
 
   mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
 
