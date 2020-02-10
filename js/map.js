@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var KEY_ESC = 27;
   var map = document.querySelector('.map');
   var mapPinMain = map.querySelector('.map__pin--main');
   var mapPinsArea = map.querySelector('.map__pins');
@@ -60,9 +59,7 @@
   };
 
   var documentEscKeyHandler = function (evt) {
-    if (evt.keyCode === KEY_ESC) {
-      removeCard();
-    }
+    window.util.escEvent(evt, removeCard);
   };
 
   mapPinsArea.addEventListener('click', function (evt) {
