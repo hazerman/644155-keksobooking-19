@@ -23,7 +23,6 @@
   };
 
   mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
-
   mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
 
   window.form.makeFormPrimarySettings();
