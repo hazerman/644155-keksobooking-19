@@ -1,9 +1,7 @@
 'use strict';
 
 (function () {
-  var PIN_MIN_Y = 130;
-  var PIN_MAX_Y = 630;
-  var PIN_MIN_X = 0;
+
   var CARD_AVATAR = 'img/avatars/user';
   var CARD_TITLES = [
     'Уютное гнездышко для молодоженов',
@@ -51,7 +49,12 @@
   ];
   var map = document.querySelector('.map');
   var mapPinsArea = map.querySelector('.map__pins');
-  var pinMaxX = mapPinsArea.offsetWidth;
+  var AreaLimit = {
+    MIN_Y: 130,
+    MAX_Y: 630,
+    MIN_X: 0,
+    MAX_X: mapPinsArea.offsetWidth
+  };
 
   var getRandomValue = function (min, max, values, needArrayAsResult) {
     var randomNumber = Math.floor(Math.random() * (max - min)) + min;
@@ -97,8 +100,8 @@
           photos: getRandomValue(0, CARD_PHOTOS.length, CARD_PHOTOS, true)
         },
         location: {
-          x: getRandomValue(PIN_MIN_X, pinMaxX),
-          y: getRandomValue(PIN_MIN_Y, PIN_MAX_Y)
+          x: getRandomValue(AreaLimit.MIN_X, AreaLimit.MAX_X),
+          y: getRandomValue(AreaLimit.MIN_Y, AreaLimit.MAX_Y)
         }
       };
       objectCardTemplate.offer.address = objectCardTemplate.location.x + ', ' + objectCardTemplate.location.y;
@@ -109,5 +112,6 @@
 
   window.data = {
     generateArrayOfCards: generateArrayOfCards,
+    AreaLimit: AreaLimit,
   };
 })();

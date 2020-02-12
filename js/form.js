@@ -80,6 +80,10 @@
     field.removeAttribute('style');
   };
 
+  var setAddress = function () {
+    adFormAddressInput.value = window.map.getAddressFromMainPin(true);
+  };
+
   var makeActive = function () {
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(mapFormInputs);
@@ -141,5 +145,6 @@
   window.form = {
     makeFormActive: makeActive,
     makeFormPrimarySettings: makePrimarySettings,
+    setAddress: setAddress
   };
 })();
