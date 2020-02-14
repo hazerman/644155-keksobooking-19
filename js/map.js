@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var NUMBER_OF_WIZARDS = 5;
   var map = document.querySelector('.map');
   var mapPinMain = map.querySelector('.map__pin--main');
   var mapPinsArea = map.querySelector('.map__pins');
@@ -10,6 +11,7 @@
   var pinMainFullHeight = pinMainHeight + pinMainArrowHeight;
   var cardElements = [];
   var pinButtons = [];
+  var cardObjects = [];
 
   var getAddressFromMainPin = function (isActive) {
     var address;
@@ -23,22 +25,31 @@
     return address;
   };
 
-  var makeMapActive = function (cards) {
-    map.classList.remove('map--faded');
+  var cardObjectsLoadSuccessHandler = function (array) {
+    for (var i = 0; i < array.length; i++) {
+      cardObjects.push(array[i]);
+    }
     var fragmentForPin = document.createDocumentFragment();
-    for (var i = 0; i < cards.length; i++) {
-      if ('offer' in cards[i]) {
-        fragmentForPin.appendChild(window.pin.renderPin(cards[i]));
+    for (var j = 0; j < NUMBER_OF_WIZARDS; j++) {
+      if ('offer' in cardObjects[j]) {
+        fragmentForPin.appendChild(window.pin.renderPin(cardObjects[j]));
       }
     }
     pinButtons = fragmentForPin.querySelectorAll('.map__pin');
     mapPinsArea.appendChild(fragmentForPin);
     var fragmentForCard = document.createDocumentFragment();
-    for (var k = 0; k < cards.length; k++) {
-      fragmentForCard.appendChild(window.card.renderCard(cards[k]));
+    for (var k = 0; k < NUMBER_OF_WIZARDS; k++) {
+      if ('offer' in cardObjects[k]) {
+        fragmentForCard.appendChild(window.card.renderCard(cardObjects[k]));
+      }
     }
     cardElements = fragmentForCard.querySelectorAll('.map__card');
     window.cardActions.activate(pinButtons, cardElements);
+  };
+
+  var makeMapActive = function () {
+    map.classList.remove('map--faded');
+    window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
   };
 
   window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, window.form.setAddress);
