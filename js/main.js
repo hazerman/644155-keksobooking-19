@@ -4,24 +4,24 @@
   var map = document.querySelector('.map');
   var mapPinMain = map.querySelector('.map__pin--main');
 
-  var makePageActive = function () {
+  var activatePage = function () {
     mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
     mapPinMain.removeEventListener('keydown', mapPinMainEnterKeyHandler);
-    window.form.makeFormActive();
-    window.map.makeMapActive();
+    window.form.activateForm();
+    window.map.activateMap();
   };
 
-  var makePageInactive = function () {
+  var deactivatePage = function () {
     mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
     mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
   };
 
   var mapPinMainMouseDownHandler = function () {
-    makePageActive();
+    activatePage();
   };
 
   var mapPinMainEnterKeyHandler = function (evt) {
-    window.util.enterEvent(evt, makePageActive);
+    window.util.enterEvent(evt, activatePage);
   };
 
   mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
@@ -30,6 +30,6 @@
   window.form.makeFormPrimarySettings();
 
   window.main = {
-    makePageInactive: makePageInactive
+    deactivatePage: deactivatePage
   };
 })();

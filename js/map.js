@@ -52,7 +52,7 @@
   };
 
   var isAlreadyLoaded = false;
-  var makeMapActive = function () {
+  var activateMap = function () {
     map.classList.remove('map--faded');
     if (!isAlreadyLoaded) {
       window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
@@ -63,7 +63,7 @@
     });
   };
 
-  var makeMapInactive = function () {
+  var deactivateMap = function () {
     map.classList.add('map--faded');
     mapPinMain.style.left = pinMainStartPosition.x;
     mapPinMain.style.top = pinMainStartPosition.y;
@@ -73,11 +73,13 @@
     });
   };
 
-  window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, window.form.setAddress);
+  window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, function () {
+    window.form.setAddress(true);
+  });
 
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,
-    makeMapActive: makeMapActive,
-    makeMapInactive: makeMapInactive
+    activateMap: activateMap,
+    deactivateMap: deactivateMap
   };
 })();

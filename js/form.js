@@ -80,20 +80,20 @@
     field.removeAttribute('style');
   };
 
-  var setAddress = function () {
-    adFormAddressInput.value = window.map.getAddressFromMainPin(true);
+  var setAddress = function (isPinActive) {
+    adFormAddressInput.value = window.map.getAddressFromMainPin(isPinActive);
   };
 
-  var makeActive = function () {
+  var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
     enableFormElements(adFormFieldsets);
     adFormAddressInput.setAttribute('readonly', '');
-    adFormAddressInput.value = window.map.getAddressFromMainPin(true);
+    setAddress(true);
   };
 
-  var makeInactive = function () {
+  var deactivateForm = function () {
     adForm.classList.add('ad-form--disabled');
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
@@ -104,7 +104,7 @@
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
     disableFormElements(adFormFieldsets);
-    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
+    setAddress(false);
     setLinkBetweenTypeAndPrice();
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
   };
@@ -144,7 +144,7 @@
   var adFormSuccessSubmitHandler = function () {
     window.message.showMessage('success');
     adForm.reset();
-    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
+    setAddress(false);
   };
 
   var adFormErrorSubmitHandler = function (message) {
@@ -165,20 +165,20 @@
   });
 
   adForm.addEventListener('reset', function () {
-    makeInactive();
-    window.map.makeMapInactive();
-    window.main.makePageInactive();
+    deactivateForm();
+    window.map.deactivateMap();
+    window.main.deactivatePage();
   });
 
   var adFormResetButton = adForm.querySelector('.ad-form__reset');
   adFormResetButton.addEventListener('click', function (evt) {
     evt.preventDefault();
     adForm.reset();
-    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
+    setAddress(false);
   });
 
   window.form = {
-    makeFormActive: makeActive,
+    activateForm: activateForm,
     makeFormPrimarySettings: makePrimarySettings,
     setAddress: setAddress
   };
