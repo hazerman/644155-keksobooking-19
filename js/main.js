@@ -11,6 +11,11 @@
     window.map.makeMapActive();
   };
 
+  var makePageInactive = function () {
+    mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
+    mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
+  };
+
   var mapPinMainMouseDownHandler = function () {
     makePageActive();
   };
@@ -23,4 +28,8 @@
   mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
 
   window.form.makeFormPrimarySettings();
+
+  window.main = {
+    makePageInactive: makePageInactive
+  };
 })();

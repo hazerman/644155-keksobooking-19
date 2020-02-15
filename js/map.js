@@ -1,10 +1,14 @@
 'use strict';
 
 (function () {
-  var NUMBER_OF_WIZARDS = 5;
+  var NUMBER_OF_PINS = 5;
   var map = document.querySelector('.map');
   var mapPinMain = map.querySelector('.map__pin--main');
   var mapPinsArea = map.querySelector('.map__pins');
+  var pinMainStartPosition = {
+    x: mapPinMain.style.left,
+    y: mapPinMain.style.top
+  };
   var pinMainWidth = mapPinMain.offsetWidth;
   var pinMainHeight = pinMainWidth;
   var pinMainArrowHeight = 16;
@@ -30,7 +34,7 @@
       cardObjects.push(array[i]);
     }
     var fragmentForPin = document.createDocumentFragment();
-    for (var j = 0; j < NUMBER_OF_WIZARDS; j++) {
+    for (var j = 0; j < NUMBER_OF_PINS; j++) {
       if ('offer' in cardObjects[j]) {
         fragmentForPin.appendChild(window.pin.renderPin(cardObjects[j]));
       }
@@ -38,7 +42,7 @@
     pinButtons = fragmentForPin.querySelectorAll('.map__pin');
     mapPinsArea.appendChild(fragmentForPin);
     var fragmentForCard = document.createDocumentFragment();
-    for (var k = 0; k < NUMBER_OF_WIZARDS; k++) {
+    for (var k = 0; k < NUMBER_OF_PINS; k++) {
       if ('offer' in cardObjects[k]) {
         fragmentForCard.appendChild(window.card.renderCard(cardObjects[k]));
       }
@@ -47,9 +51,26 @@
     window.cardActions.activate(pinButtons, cardElements);
   };
 
+  var isAlreadyLoaded = false;
   var makeMapActive = function () {
     map.classList.remove('map--faded');
-    window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
+    if (!isAlreadyLoaded) {
+      window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
+      isAlreadyLoaded = true;
+    }
+    pinButtons.forEach(function (button) {
+      button.hidden = false;
+    });
+  };
+
+  var makeMapInactive = function () {
+    map.classList.add('map--faded');
+    mapPinMain.style.left = pinMainStartPosition.x;
+    mapPinMain.style.top = pinMainStartPosition.y;
+    window.cardActions.removeCard();
+    pinButtons.forEach(function (button) {
+      button.hidden = true;
+    });
   };
 
   window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, window.form.setAddress);
@@ -57,5 +78,6 @@
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,
     makeMapActive: makeMapActive,
+    makeMapInactive: makeMapInactive
   };
 })();

@@ -93,6 +93,13 @@
     adFormAddressInput.value = window.map.getAddressFromMainPin(true);
   };
 
+  var makeInactive = function () {
+    adForm.classList.add('ad-form--disabled');
+    disableFormElements(mapFormInputs);
+    disableFormElements(mapFormSelects);
+    disableFormElements(adFormFieldsets);
+  };
+
   var makePrimarySettings = function () {
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
@@ -134,12 +141,40 @@
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
   });
 
+  var adFormSuccessSubmitHandler = function () {
+    window.message.showMessage('success');
+    adForm.reset();
+    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
+  };
+
+  var adFormErrorSubmitHandler = function (message) {
+    window.message.showMessage('error', message);
+  };
+
   adForm.addEventListener('change', function (evt) {
     if (evt.target.validity.valid) {
       resetInvalidField(evt.target);
     } else {
       showInvalidField(evt.target);
     }
+  });
+
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.ajax.sendForm(new FormData(adForm), adFormSuccessSubmitHandler, adFormErrorSubmitHandler);
+  });
+
+  adForm.addEventListener('reset', function () {
+    makeInactive();
+    window.map.makeMapInactive();
+    window.main.makePageInactive();
+  });
+
+  var adFormResetButton = adForm.querySelector('.ad-form__reset');
+  adFormResetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    adForm.reset();
+    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
   });
 
   window.form = {

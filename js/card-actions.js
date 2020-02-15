@@ -7,19 +7,21 @@
   var mapFiltersContainer = map.querySelector('.map__filters-container');
   var previousPinButton;
   var previousCard;
+  var documentEscKeyHandler = function (evt) {
+    window.util.escEvent(evt, removeCard);
+  };
 
-  var activate = function (buttons, cards) {
-    var documentEscKeyHandler = function (evt) {
-      window.util.escEvent(evt, removeCard);
-    };
-
-    var removeCard = function () {
+  var removeCard = function () {
+    if (previousPinButton) {
       document.removeEventListener('keydown', documentEscKeyHandler);
       previousPinButton.classList.remove('map__pin--active');
       previousCard.remove();
       previousCard = null;
       previousPinButton = null;
-    };
+    }
+  };
+
+  var activate = function (buttons, cards) {
 
     var showCard = function (button) {
       var currentButton;
@@ -54,6 +56,7 @@
   };
 
   window.cardActions = {
-    activate: activate
+    activate: activate,
+    removeCard: removeCard
   };
 })();
