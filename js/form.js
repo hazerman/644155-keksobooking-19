@@ -27,6 +27,11 @@
   var adFormTimeOutSelect = adForm.querySelector('#timeout');
   var adFormRoomNumberSelect = adForm.querySelector('#room_number');
   var adFormCapacitySelect = adForm.querySelector('#capacity');
+  var validationFields = [
+    adFormTitleInput,
+    adFormPriceInput,
+    adFormCapacitySelect
+  ];
 
   var disableFormElements = function (collection) {
     for (var i = 0; i < collection.length; i++) {
@@ -80,26 +85,33 @@
     field.removeAttribute('style');
   };
 
-  var setAddress = function () {
-    adFormAddressInput.value = window.map.getAddressFromMainPin(true);
+  var setAddress = function (isPinActive) {
+    adFormAddressInput.value = window.map.getAddressFromMainPin(isPinActive);
   };
 
-  var makeActive = function () {
+  var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
     enableFormElements(adFormFieldsets);
     adFormAddressInput.setAttribute('readonly', '');
-    adFormAddressInput.value = window.map.getAddressFromMainPin(true);
+    adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
+    setAddress(true);
+  };
+
+  var deactivateForm = function () {
+    adForm.classList.add('ad-form--disabled');
+    disableFormElements(mapFormInputs);
+    disableFormElements(mapFormSelects);
+    disableFormElements(adFormFieldsets);
   };
 
   var makePrimarySettings = function () {
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
     disableFormElements(adFormFieldsets);
-    adFormAddressInput.value = window.map.getAddressFromMainPin(false);
+    setAddress(false);
     setLinkBetweenTypeAndPrice();
-    adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
   };
 
   adFormTitleInput.addEventListener('invalid', function (evt) {
@@ -134,6 +146,16 @@
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
   });
 
+  var adFormSuccessSubmitHandler = function () {
+    window.message.showMessage('success');
+    adForm.reset();
+    setAddress(false);
+  };
+
+  var adFormErrorSubmitHandler = function (message) {
+    window.message.showMessage('error', message);
+  };
+
   adForm.addEventListener('change', function (evt) {
     if (evt.target.validity.valid) {
       resetInvalidField(evt.target);
@@ -142,8 +164,31 @@
     }
   });
 
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.ajax.sendForm(new FormData(adForm), adFormSuccessSubmitHandler, adFormErrorSubmitHandler);
+  });
+
+  adForm.addEventListener('reset', function () {
+    deactivateForm();
+    window.map.deactivateMap();
+    window.main.deactivatePage();
+    validationFields.forEach(function (item) {
+      if (item.hasAttribute('style')) {
+        resetInvalidField(item);
+      }
+    });
+  });
+
+  var adFormResetButton = adForm.querySelector('.ad-form__reset');
+  adFormResetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    adForm.reset();
+    setAddress(false);
+  });
+
   window.form = {
-    makeFormActive: makeActive,
+    activateForm: activateForm,
     makeFormPrimarySettings: makePrimarySettings,
     setAddress: setAddress
   };
