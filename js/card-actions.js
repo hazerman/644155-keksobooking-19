@@ -5,8 +5,8 @@
   var mapFiltersContainer = map.querySelector('.map__filters-container');
   var pinButtons = [];
   var cardElements = [];
-  var previousPinButton;
-  var previousCard;
+  var previousPinButton = null;
+  var previousCard = null;
 
   var documentEscKeyHandler = function (evt) {
     window.util.escEvent(evt, removeCard);

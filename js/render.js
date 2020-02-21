@@ -18,6 +18,7 @@
 
   var showPins = function (data) {
     var numberOfPins = data.length > MAX_PINS ? MAX_PINS : data.length;
+    window.cardActions.removeCard();
     removePins();
     cardElements = [];
     cardObjects = [];

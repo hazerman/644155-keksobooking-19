@@ -45,6 +45,16 @@
     }
   };
 
+  var disableMapForm = function () {
+    disableFormElements(mapFormInputs);
+    disableFormElements(mapFormSelects);
+  };
+
+  var enableMapForm = function () {
+    enableFormElements(mapFormInputs);
+    enableFormElements(mapFormSelects);
+  };
+
   var setLinkBetweenTypeAndPrice = function () {
     adFormPriceInput.setAttribute('min', typeMinPrice[adFormTypeSelect.value]);
     adFormPriceInput.setAttribute('placeholder', typeMinPrice[adFormTypeSelect.value]);
@@ -91,8 +101,6 @@
 
   var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
-    enableFormElements(mapFormInputs);
-    enableFormElements(mapFormSelects);
     enableFormElements(adFormFieldsets);
     adFormAddressInput.setAttribute('readonly', '');
     adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
@@ -101,14 +109,12 @@
 
   var deactivateForm = function () {
     adForm.classList.add('ad-form--disabled');
-    disableFormElements(mapFormInputs);
-    disableFormElements(mapFormSelects);
+    disableMapForm();
     disableFormElements(adFormFieldsets);
   };
 
   var makePrimarySettings = function () {
-    disableFormElements(mapFormInputs);
-    disableFormElements(mapFormSelects);
+    disableMapForm();
     disableFormElements(adFormFieldsets);
     setAddress(false);
     setLinkBetweenTypeAndPrice();
@@ -189,6 +195,7 @@
 
   window.form = {
     activateForm: activateForm,
+    enableMapForm: enableMapForm,
     makeFormPrimarySettings: makePrimarySettings,
     setAddress: setAddress
   };

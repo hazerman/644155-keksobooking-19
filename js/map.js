@@ -33,6 +33,7 @@
     return address;
   };
 
+  var hasAlreadyLoaded = false;
   var cardObjectsLoadSuccessHandler = function (data) {
     data.forEach(function (item) {
       if ('offer' in item) {
@@ -40,14 +41,14 @@
       }
     });
     window.render.showPins(cardObjects);
+    window.form.enableMapForm();
+    hasAlreadyLoaded = true;
   };
 
-  var isAlreadyLoaded = false;
   var activateMap = function () {
     map.classList.remove('map--faded');
-    if (!isAlreadyLoaded) {
+    if (!hasAlreadyLoaded) {
       window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
-      isAlreadyLoaded = true;
     } else {
       window.render.showPins(cardObjects);
     }
@@ -70,6 +71,7 @@
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,
     activateMap: activateMap,
-    deactivateMap: deactivateMap
+    deactivateMap: deactivateMap,
+    cardObjects: cardObjects
   };
 })();
