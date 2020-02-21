@@ -51,6 +51,7 @@
       window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
     } else {
       window.render.showPins(cardObjects);
+      window.form.enableMapForm();
     }
     mapPinsArea.addEventListener('click', pinsAreaClickHandler);
   };
