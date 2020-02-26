@@ -2,13 +2,19 @@
 
 (function () {
   var map = document.querySelector('.map');
-  var mapPinMain = map.querySelector('.map__pin--main');
-  var mapPinsArea = map.querySelector('.map__pins');
   var mapFiltersContainer = map.querySelector('.map__filters-container');
-  var previousPinButton;
-  var previousCard;
+  var pinButtons = [];
+  var cardElements = [];
+  var previousPinButton = null;
+  var previousCard = null;
+
   var documentEscKeyHandler = function (evt) {
     window.util.escEvent(evt, removeCard);
+  };
+
+  var recieveElements = function (buttons, cards) {
+    pinButtons = buttons;
+    cardElements = cards;
   };
 
   var removeCard = function () {
@@ -21,42 +27,33 @@
     }
   };
 
-  var activate = function (buttons, cards) {
-
-    var showCard = function (button) {
-      var currentButton;
-      var indexOfCard;
-      if (previousPinButton) {
-        removeCard();
+  var showCard = function (button) {
+    var currentButton;
+    var indexOfCard;
+    if (previousPinButton) {
+      removeCard();
+    }
+    for (var i = 0; i < pinButtons.length; i++) {
+      if (button === pinButtons[i]) {
+        currentButton = pinButtons[i];
+        currentButton.classList.add('map__pin--active');
+        indexOfCard = i;
+        var currentCard = cardElements[indexOfCard].cloneNode(true);
+        currentCard.querySelector('.popup__close').addEventListener('click', function () {
+          removeCard();
+        });
+        document.addEventListener('keydown', documentEscKeyHandler);
+        mapFiltersContainer.before(currentCard);
+        break;
       }
-      for (var i = 0; i < buttons.length; i++) {
-        if (button === buttons[i]) {
-          currentButton = buttons[i];
-          currentButton.classList.add('map__pin--active');
-          indexOfCard = i;
-          var currentCard = cards[indexOfCard].cloneNode(true);
-          currentCard.querySelector('.popup__close').addEventListener('click', function () {
-            removeCard();
-          });
-          document.addEventListener('keydown', documentEscKeyHandler);
-          mapFiltersContainer.before(currentCard);
-          break;
-        }
-      }
-      previousPinButton = currentButton;
-      previousCard = currentCard;
-    };
-
-    mapPinsArea.addEventListener('click', function (evt) {
-      var target = evt.target.closest('button');
-      if (target !== mapPinMain && target) {
-        showCard(target);
-      }
-    });
+    }
+    previousPinButton = currentButton;
+    previousCard = currentCard;
   };
 
   window.cardActions = {
-    activate: activate,
+    recieveElements: recieveElements,
+    showCard: showCard,
     removeCard: removeCard
   };
 })();

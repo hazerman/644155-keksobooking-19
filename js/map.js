@@ -1,10 +1,9 @@
 'use strict';
 
 (function () {
-  var NUMBER_OF_PINS = 5;
   var map = document.querySelector('.map');
-  var mapPinMain = map.querySelector('.map__pin--main');
   var mapPinsArea = map.querySelector('.map__pins');
+  var mapPinMain = map.querySelector('.map__pin--main');
   var pinMainStartPosition = {
     x: mapPinMain.style.left,
     y: mapPinMain.style.top
@@ -13,9 +12,14 @@
   var pinMainHeight = pinMainWidth;
   var pinMainArrowHeight = 16;
   var pinMainFullHeight = pinMainHeight + pinMainArrowHeight;
-  var cardElements = [];
-  var pinButtons = [];
   var cardObjects = [];
+
+  var pinsAreaClickHandler = function (evt) {
+    var target = evt.target.closest('button');
+    if (target !== mapPinMain && target) {
+      window.cardActions.showCard(target);
+    }
+  };
 
   var getAddressFromMainPin = function (isActive) {
     var address;
@@ -29,38 +33,27 @@
     return address;
   };
 
-  var cardObjectsLoadSuccessHandler = function (array) {
-    for (var i = 0; i < array.length; i++) {
-      cardObjects.push(array[i]);
-    }
-    var fragmentForPin = document.createDocumentFragment();
-    for (var j = 0; j < NUMBER_OF_PINS; j++) {
-      if ('offer' in cardObjects[j]) {
-        fragmentForPin.appendChild(window.pin.renderPin(cardObjects[j]));
+  var hasAlreadyLoaded = false;
+  var cardObjectsLoadSuccessHandler = function (data) {
+    data.forEach(function (item) {
+      if ('offer' in item) {
+        cardObjects.push(item);
       }
-    }
-    pinButtons = fragmentForPin.querySelectorAll('.map__pin');
-    mapPinsArea.appendChild(fragmentForPin);
-    var fragmentForCard = document.createDocumentFragment();
-    for (var k = 0; k < NUMBER_OF_PINS; k++) {
-      if ('offer' in cardObjects[k]) {
-        fragmentForCard.appendChild(window.card.renderCard(cardObjects[k]));
-      }
-    }
-    cardElements = fragmentForCard.querySelectorAll('.map__card');
-    window.cardActions.activate(pinButtons, cardElements);
+    });
+    window.render.showPins(cardObjects);
+    window.form.enableMapForm();
+    hasAlreadyLoaded = true;
   };
 
-  var isAlreadyLoaded = false;
   var activateMap = function () {
     map.classList.remove('map--faded');
-    if (!isAlreadyLoaded) {
+    if (!hasAlreadyLoaded) {
       window.ajax.loadCardObjects(cardObjectsLoadSuccessHandler);
-      isAlreadyLoaded = true;
+    } else {
+      window.render.showPins(cardObjects);
+      window.form.enableMapForm();
     }
-    pinButtons.forEach(function (button) {
-      button.hidden = false;
-    });
+    mapPinsArea.addEventListener('click', pinsAreaClickHandler);
   };
 
   var deactivateMap = function () {
@@ -68,9 +61,8 @@
     mapPinMain.style.left = pinMainStartPosition.x;
     mapPinMain.style.top = pinMainStartPosition.y;
     window.cardActions.removeCard();
-    pinButtons.forEach(function (button) {
-      button.hidden = true;
-    });
+    window.render.removePins();
+    mapPinsArea.removeEventListener('click', pinsAreaClickHandler);
   };
 
   window.dragNDrop.activate(mapPinMain, pinMainWidth, pinMainFullHeight, function () {
@@ -80,6 +72,7 @@
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,
     activateMap: activateMap,
-    deactivateMap: deactivateMap
+    deactivateMap: deactivateMap,
+    cardObjects: cardObjects
   };
 })();
