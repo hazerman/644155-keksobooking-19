@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-  var typeMinPrice = {
+  var typeToMinPriceMap = {
     palace: 10000,
     flat: 1000,
     house: 5000,
     bungalo: 0
   };
-  var linkRoomsGuests = {
+  var roomsToGuestsMap = {
     '1': [1],
     '2': [1, 2],
     '3': [1, 2, 3],
@@ -58,8 +58,8 @@
   };
 
   var setLinkBetweenTypeAndPrice = function () {
-    adFormPriceInput.setAttribute('min', typeMinPrice[adFormTypeSelect.value]);
-    adFormPriceInput.setAttribute('placeholder', typeMinPrice[adFormTypeSelect.value]);
+    adFormPriceInput.setAttribute('min', typeToMinPriceMap[adFormTypeSelect.value]);
+    adFormPriceInput.setAttribute('placeholder', typeToMinPriceMap[adFormTypeSelect.value]);
   };
 
   var setLinkBetweenTime = function (action) {
@@ -73,8 +73,8 @@
   var getValidityMessageForCapacity = function (capacity) {
     var message = '';
     var roomNumber = adFormRoomNumberSelect.value;
-    for (var i = 0; i < linkRoomsGuests[roomNumber].length; i++) {
-      if (parseInt(capacity.value, 10) === linkRoomsGuests[roomNumber][i]) {
+    for (var i = 0; i < roomsToGuestsMap[roomNumber].length; i++) {
+      if (parseInt(capacity.value, 10) === roomsToGuestsMap[roomNumber][i]) {
         return message;
       }
     }
@@ -84,7 +84,7 @@
     }
     message =
       'Для такого количества комнат вы можете выбрать не больше '
-      + linkRoomsGuests[roomNumber][linkRoomsGuests[roomNumber].length - 1]
+      + roomsToGuestsMap[roomNumber][roomsToGuestsMap[roomNumber].length - 1]
       + ' гостей, а также нельзя выбирать вариант НЕ ДЛЯ ГОСТЕЙ';
     return message;
   };

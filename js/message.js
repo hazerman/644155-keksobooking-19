@@ -3,13 +3,13 @@
 (function () {
   var successMessage = document.querySelector('#success').content.querySelector('.success');
   var errorMessage = document.querySelector('#error').content.querySelector('.error');
-  var linkTypeMessage = {
+  var typeToMessageMap = {
     'success': successMessage,
     'error': errorMessage
   };
 
   var showMessage = function (type, text) {
-    var messageElement = linkTypeMessage[type].cloneNode(true);
+    var messageElement = typeToMessageMap[type].cloneNode(true);
     if (type === 'error') {
       messageElement.querySelector('p').innerText += text;
     }
