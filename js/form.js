@@ -48,11 +48,13 @@
   var disableMapForm = function () {
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
+    window.filter.disableFilterListener();
   };
 
   var enableMapForm = function () {
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
+    window.filter.enableFilterListener();
   };
 
   var setLinkBetweenTypeAndPrice = function () {
@@ -177,6 +179,7 @@
 
   adForm.addEventListener('reset', function () {
     deactivateForm();
+    mapForm.reset();
     window.map.deactivateMap();
     window.main.deactivatePage();
     validationFields.forEach(function (item) {
