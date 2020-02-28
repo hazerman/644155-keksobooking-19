@@ -153,6 +153,7 @@
     window.message.showMessage('success');
     adForm.reset();
     setAddress(false);
+    setLinkBetweenRoomsAndGuests();
   };
 
   var adFormErrorSubmitHandler = function (message) {
@@ -189,6 +190,7 @@
     evt.preventDefault();
     adForm.reset();
     setAddress(false);
+    setLinkBetweenRoomsAndGuests();
   });
 
   window.form = {
