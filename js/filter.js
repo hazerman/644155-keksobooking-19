@@ -25,66 +25,54 @@
     ]
   };
 
-  var filtrateSelects = function (array, flag, value) {
-    var filteredArray = array.filter(function (item) {
-      if (value === defaultValue) {
-        return item;
-      }
-      if (flag === 'price') {
-        return item.offer[flag] >= rangeToCostMap[value][0] && item.offer[flag] <= rangeToCostMap[value][1];
-      }
-      if (typeof item.offer[flag] === 'number') {
-        value = parseInt(value, 10);
-      }
-      return item.offer[flag] === value;
-    });
-    return filteredArray;
+  var isFilteredBySelect = function (item, flag, value) {
+    if (value === defaultValue) {
+      return true;
+    }
+    if (flag === 'price') {
+      return item.offer[flag] >= rangeToCostMap[value][0] && item.offer[flag] <= rangeToCostMap[value][1];
+    }
+    if (typeof item.offer[flag] === 'number') {
+      value = parseInt(value, 10);
+    }
+    return item.offer[flag] === value;
   };
 
-  var filtrateByFeatures = function (array) {
-    var filteredArray = [];
+  var isFilteredByFeature = function (item) {
     var checkedFeatures = filterFeature.querySelectorAll('input:checked');
+    if (!checkedFeatures.length) {
+      return true;
+    }
+    var checkedValues = [];
+    checkedFeatures.forEach(function (feature) {
+      checkedValues.push(feature.value);
+    });
+    var sameValues = item.offer.features.filter(function (feature) {
+      return checkedValues.includes(feature);
+    });
+    return sameValues.length >= checkedValues.length;
+  };
+
+  var filtrate = function (array) {
+    var filteredArray = [];
     for (var i = 0; i < array.length; i++) {
-      if (!checkedFeatures.length) {
+      var isFiltered = isFilteredBySelect(array[i], 'type', filterType.value) &&
+      isFilteredBySelect(array[i], 'price', filterPrice.value) &&
+      isFilteredBySelect(array[i], 'rooms', filterRoom.value) &&
+      isFilteredBySelect(array[i], 'guests', filterGuest.value) &&
+      isFilteredByFeature(array[i]);
+      if (isFiltered) {
         filteredArray.push(array[i]);
-      } else {
-        var checkedValues = [];
-        checkedFeatures.forEach(function (item) {
-          checkedValues.push(item.value);
-        });
-        var sameValues = array[i].offer.features.filter(function (item) {
-          return checkedValues.includes(item);
-        });
-        if (sameValues.length >= checkedValues.length) {
-          filteredArray.push(array[i]);
-        }
       }
       if (filteredArray.length === MAX_PINS) {
-        break; // т.к. фильтр по фичам будет последним в цепочке, то проверяем чтобы он не выполнялся больше 5 раз
+        break;
       }
     }
     return filteredArray;
   };
 
-  var filtrate = function () {
-    return filtrateByFeatures(
-        filtrateSelects(
-            filtrateSelects(
-                filtrateSelects(
-                    filtrateSelects(window.map.cardObjects, 'type', filterType.value),
-                    'price',
-                    filterPrice.value
-                ),
-                'rooms',
-                filterRoom.value
-            ),
-            'guests',
-            filterGuest.value)
-    );
-  };
-
   var renderFiltratedPins = function () {
-    window.render.showPins(filtrate());
+    window.render.showPins(filtrate(window.map.cardObjects));
   };
 
   var mapFormChangeHandler = window.util.debounce(renderFiltratedPins);
