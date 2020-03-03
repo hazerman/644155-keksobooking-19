@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-  var typeMinPrice = {
+  var typeToMinPriceMap = {
     palace: 10000,
     flat: 1000,
     house: 5000,
     bungalo: 0
   };
-  var linkRoomsGuests = {
+  var roomsToGuestsMap = {
     '1': [1],
     '2': [1, 2],
     '3': [1, 2, 3],
@@ -29,8 +29,7 @@
   var adFormCapacitySelect = adForm.querySelector('#capacity');
   var validationFields = [
     adFormTitleInput,
-    adFormPriceInput,
-    adFormCapacitySelect
+    adFormPriceInput
   ];
 
   var disableFormElements = function (collection) {
@@ -48,16 +47,18 @@
   var disableMapForm = function () {
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
+    window.filter.disableFilterListener();
   };
 
   var enableMapForm = function () {
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
+    window.filter.enableFilterListener();
   };
 
   var setLinkBetweenTypeAndPrice = function () {
-    adFormPriceInput.setAttribute('min', typeMinPrice[adFormTypeSelect.value]);
-    adFormPriceInput.setAttribute('placeholder', typeMinPrice[adFormTypeSelect.value]);
+    adFormPriceInput.setAttribute('min', typeToMinPriceMap[adFormTypeSelect.value]);
+    adFormPriceInput.setAttribute('placeholder', typeToMinPriceMap[adFormTypeSelect.value]);
   };
 
   var setLinkBetweenTime = function (action) {
@@ -68,23 +69,27 @@
     }
   };
 
-  var getValidityMessageForCapacity = function (capacity) {
-    var message = '';
+  var setLinkBetweenRoomsAndGuests = function () {
+    var guestsOptions = adFormCapacitySelect.querySelectorAll('option');
+    guestsOptions.forEach(function (item) {
+      item.disabled = true;
+    });
+    var guestsValues = Array.from(guestsOptions).map(function (item) {
+      return item.value;
+    });
     var roomNumber = adFormRoomNumberSelect.value;
-    for (var i = 0; i < linkRoomsGuests[roomNumber].length; i++) {
-      if (parseInt(capacity.value, 10) === linkRoomsGuests[roomNumber][i]) {
-        return message;
+    var isSelectedIndexValid = false;
+    var validIndex;
+    roomsToGuestsMap[roomNumber].forEach(function (item) {
+      validIndex = guestsValues.indexOf(item.toString());
+      guestsOptions[validIndex].disabled = false;
+      if (adFormCapacitySelect.selectedIndex === validIndex) {
+        isSelectedIndexValid = true;
       }
+    });
+    if (!isSelectedIndexValid) {
+      adFormCapacitySelect.selectedIndex = validIndex;
     }
-    if (parseInt(roomNumber, 10) === 100) {
-      message = 'Для такого количества комнат нужно выбрать вариант НЕ ДЛЯ ГОСТЕЙ';
-      return message;
-    }
-    message =
-      'Для такого количества комнат вы можете выбрать не больше '
-      + linkRoomsGuests[roomNumber][linkRoomsGuests[roomNumber].length - 1]
-      + ' гостей, а также нельзя выбирать вариант НЕ ДЛЯ ГОСТЕЙ';
-    return message;
   };
 
   var showInvalidField = function (field) {
@@ -103,7 +108,6 @@
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(adFormFieldsets);
     adFormAddressInput.setAttribute('readonly', '');
-    adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
     setAddress(true);
   };
 
@@ -118,6 +122,7 @@
     disableFormElements(adFormFieldsets);
     setAddress(false);
     setLinkBetweenTypeAndPrice();
+    setLinkBetweenRoomsAndGuests();
   };
 
   adFormTitleInput.addEventListener('invalid', function (evt) {
@@ -140,22 +145,15 @@
     setLinkBetweenTime('out');
   });
 
-  adFormCapacitySelect.addEventListener('input', function () {
-    adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
-  });
-
-  adFormCapacitySelect.addEventListener('invalid', function (evt) {
-    showInvalidField(evt.target);
-  });
-
   adFormRoomNumberSelect.addEventListener('input', function () {
-    adFormCapacitySelect.setCustomValidity(getValidityMessageForCapacity(adFormCapacitySelect));
+    setLinkBetweenRoomsAndGuests();
   });
 
   var adFormSuccessSubmitHandler = function () {
     window.message.showMessage('success');
     adForm.reset();
     setAddress(false);
+    setLinkBetweenRoomsAndGuests();
   };
 
   var adFormErrorSubmitHandler = function (message) {
@@ -177,6 +175,7 @@
 
   adForm.addEventListener('reset', function () {
     deactivateForm();
+    mapForm.reset();
     window.map.deactivateMap();
     window.main.deactivatePage();
     validationFields.forEach(function (item) {
@@ -191,6 +190,7 @@
     evt.preventDefault();
     adForm.reset();
     setAddress(false);
+    setLinkBetweenRoomsAndGuests();
   });
 
   window.form = {

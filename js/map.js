@@ -22,14 +22,10 @@
   };
 
   var getAddressFromMainPin = function (isActive) {
-    var address;
     var left = parseInt(mapPinMain.style.left, 10);
     var top = parseInt(mapPinMain.style.top, 10);
-    if (isActive) {
-      address = Math.round(left + pinMainWidth / 2) + ', ' + Math.round(top + pinMainFullHeight);
-    } else {
-      address = Math.round(left + pinMainWidth / 2) + ', ' + Math.round(top + pinMainHeight / 2);
-    }
+    var address = Math.round(left + pinMainWidth / 2) + ', ';
+    address += isActive ? Math.round(top + pinMainFullHeight) : Math.round(top + pinMainHeight / 2);
     return address;
   };
 
