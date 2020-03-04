@@ -109,12 +109,16 @@
     enableFormElements(adFormFieldsets);
     adFormAddressInput.setAttribute('readonly', '');
     setAddress(true);
+    window.photo.enableUserPicAdjunction();
+    window.photo.enableHousingPicAdjunction();
   };
 
   var deactivateForm = function () {
     adForm.classList.add('ad-form--disabled');
     disableMapForm();
     disableFormElements(adFormFieldsets);
+    window.photo.disableUserPicAdjunction();
+    window.photo.disableHousingPicAdjunction();
   };
 
   var makePrimarySettings = function () {
