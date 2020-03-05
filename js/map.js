@@ -67,8 +67,8 @@
 
   window.map = {
     getAddressFromMainPin: getAddressFromMainPin,
-    activateMap: activateMap,
-    deactivateMap: deactivateMap,
+    activate: activateMap,
+    deactivate: deactivateMap,
     cardObjects: cardObjects
   };
 })();

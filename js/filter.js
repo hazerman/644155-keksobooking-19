@@ -86,7 +86,7 @@
   };
 
   window.filter = {
-    enableFilterListener: enableFilterListener,
-    disableFilterListener: disableFilterListener
+    enableChangeListener: enableFilterListener,
+    disableChangeListener: disableFilterListener
   };
 })();
