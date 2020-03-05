@@ -33,15 +33,15 @@
   ];
 
   var disableFormElements = function (collection) {
-    for (var i = 0; i < collection.length; i++) {
-      collection[i].setAttribute('disabled', '');
-    }
+    collection.forEach(function (item) {
+      item.disabled = true;
+    });
   };
 
   var enableFormElements = function (collection) {
-    for (var i = 0; i < collection.length; i++) {
-      collection[i].removeAttribute('disabled');
-    }
+    collection.forEach(function (item) {
+      item.disabled = false;
+    });
   };
 
   var disableMapForm = function () {
@@ -107,7 +107,6 @@
   var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(adFormFieldsets);
-    adFormAddressInput.setAttribute('readonly', '');
     setAddress(true);
     window.photo.enableUserPicAdjunction();
     window.photo.enableHousingPicAdjunction();
@@ -125,6 +124,7 @@
     disableMapForm();
     disableFormElements(adFormFieldsets);
     setAddress(false);
+    adFormAddressInput.setAttribute('readonly', '');
     setLinkBetweenTypeAndPrice();
     setLinkBetweenRoomsAndGuests();
   };
