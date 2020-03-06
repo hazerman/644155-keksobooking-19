@@ -33,27 +33,27 @@
   ];
 
   var disableFormElements = function (collection) {
-    for (var i = 0; i < collection.length; i++) {
-      collection[i].setAttribute('disabled', '');
-    }
+    collection.forEach(function (item) {
+      item.disabled = true;
+    });
   };
 
   var enableFormElements = function (collection) {
-    for (var i = 0; i < collection.length; i++) {
-      collection[i].removeAttribute('disabled');
-    }
+    collection.forEach(function (item) {
+      item.disabled = false;
+    });
   };
 
   var disableMapForm = function () {
     disableFormElements(mapFormInputs);
     disableFormElements(mapFormSelects);
-    window.filter.disableFilterListener();
+    window.filter.disableChangeListener();
   };
 
   var enableMapForm = function () {
     enableFormElements(mapFormInputs);
     enableFormElements(mapFormSelects);
-    window.filter.enableFilterListener();
+    window.filter.enableChangeListener();
   };
 
   var setLinkBetweenTypeAndPrice = function () {
@@ -107,20 +107,24 @@
   var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
     enableFormElements(adFormFieldsets);
-    adFormAddressInput.setAttribute('readonly', '');
     setAddress(true);
+    window.photo.enableUserPicAdjunction();
+    window.photo.enableHousingPicAdjunction();
   };
 
   var deactivateForm = function () {
     adForm.classList.add('ad-form--disabled');
     disableMapForm();
     disableFormElements(adFormFieldsets);
+    window.photo.disableUserPicAdjunction();
+    window.photo.disableHousingPicAdjunction();
   };
 
   var makePrimarySettings = function () {
     disableMapForm();
     disableFormElements(adFormFieldsets);
     setAddress(false);
+    adFormAddressInput.setAttribute('readonly', '');
     setLinkBetweenTypeAndPrice();
     setLinkBetweenRoomsAndGuests();
   };
@@ -150,14 +154,15 @@
   });
 
   var adFormSuccessSubmitHandler = function () {
-    window.message.showMessage('success');
+    window.message.show('success');
     adForm.reset();
     setAddress(false);
     setLinkBetweenRoomsAndGuests();
+    setLinkBetweenTypeAndPrice();
   };
 
   var adFormErrorSubmitHandler = function (message) {
-    window.message.showMessage('error', message);
+    window.message.show('error', message);
   };
 
   adForm.addEventListener('change', function (evt) {
@@ -176,7 +181,7 @@
   adForm.addEventListener('reset', function () {
     deactivateForm();
     mapForm.reset();
-    window.map.deactivateMap();
+    window.map.deactivate();
     window.main.deactivatePage();
     validationFields.forEach(function (item) {
       if (item.hasAttribute('style')) {
@@ -191,12 +196,13 @@
     adForm.reset();
     setAddress(false);
     setLinkBetweenRoomsAndGuests();
+    setLinkBetweenTypeAndPrice();
   });
 
   window.form = {
-    activateForm: activateForm,
+    activate: activateForm,
     enableMapForm: enableMapForm,
-    makeFormPrimarySettings: makePrimarySettings,
+    makePrimarySettings: makePrimarySettings,
     setAddress: setAddress
   };
 })();

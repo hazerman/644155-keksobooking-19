@@ -7,8 +7,8 @@
   var activatePage = function () {
     mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
     mapPinMain.removeEventListener('keydown', mapPinMainEnterKeyHandler);
-    window.form.activateForm();
-    window.map.activateMap();
+    window.form.activate();
+    window.map.activate();
   };
 
   var deactivatePage = function () {
@@ -27,7 +27,7 @@
   mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
   mapPinMain.addEventListener('keydown', mapPinMainEnterKeyHandler);
 
-  window.form.makeFormPrimarySettings();
+  window.form.makePrimarySettings();
 
   window.main = {
     deactivatePage: deactivatePage

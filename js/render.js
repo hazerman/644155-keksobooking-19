@@ -27,13 +27,13 @@
     }
     var fragmentForPin = document.createDocumentFragment();
     cardObjects.forEach(function (item) {
-      fragmentForPin.appendChild(window.pin.renderPin(item));
+      fragmentForPin.appendChild(window.pin.render(item));
     });
     pinButtons = fragmentForPin.querySelectorAll('.map__pin');
     mapPinsArea.appendChild(fragmentForPin);
     var fragmentForCard = document.createDocumentFragment();
     cardObjects.forEach(function (item) {
-      fragmentForCard.appendChild(window.card.renderCard(item));
+      fragmentForCard.appendChild(window.card.render(item));
     });
     cardElements = fragmentForCard.querySelectorAll('.map__card');
     window.cardActions.recieveElements(pinButtons, cardElements);
