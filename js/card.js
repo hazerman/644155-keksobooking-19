@@ -9,23 +9,23 @@
   };
   var mapCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
-  var displayFeatures = function (list, items, features) {
-    for (var i = 0; i < items.length; i++) {
-      items[i].style.display = 'none';
-    }
-    for (var j = 0; j < features.length; j++) {
-      var featureItemClassName = '.popup__feature--' + features[j];
+  var displayFeatures = function (list, featureTemplates, features) {
+    featureTemplates.forEach(function (template) {
+      template.style.display = 'none';
+    });
+    features.forEach(function (feature) {
+      var featureItemClassName = '.popup__feature--' + feature;
       list.querySelector(featureItemClassName).style.display = 'inline-block';
-    }
+    });
   };
 
   var displayPhotos = function (list, itemTemplate, photos) {
     var fragmentForPhotos = document.createDocumentFragment();
-    for (var i = 0; i < photos.length; i++) {
-      var item = itemTemplate.cloneNode(true);
-      item.src = photos[i];
-      fragmentForPhotos.appendChild(item);
-    }
+    photos.forEach(function (photoSrc) {
+      var image = itemTemplate.cloneNode(true);
+      image.src = photoSrc;
+      fragmentForPhotos.appendChild(image);
+    });
     itemTemplate.remove();
     list.appendChild(fragmentForPhotos);
   };

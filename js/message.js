@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var NEW_MESSAGE = 'Ошибка загрузки данных с сервера';
   var successMessage = document.querySelector('#success').content.querySelector('.success');
   var errorMessage = document.querySelector('#error').content.querySelector('.error');
   var typeToMessageMap = {
@@ -8,10 +9,11 @@
     'error': errorMessage
   };
 
-  var showMessage = function (type, text) {
+  var showMessage = function (type, text, needChangeDefaultMessage) {
     var messageElement = typeToMessageMap[type].cloneNode(true);
     if (type === 'error') {
-      messageElement.querySelector('p').innerText += text;
+      var existingMessage = messageElement.querySelector('p').innerText;
+      messageElement.querySelector('p').innerText = needChangeDefaultMessage ? NEW_MESSAGE + '. ' + text : existingMessage + '. ' + text;
     }
     document.querySelector('main').appendChild(messageElement);
 

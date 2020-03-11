@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
-  var mapFiltersContainer = map.querySelector('.map__filters-container');
   var pinButtons = [];
   var cardElements = [];
   var previousPinButton = null;
@@ -27,7 +25,7 @@
     }
   };
 
-  var showCard = function (button) {
+  var showCard = function (button, insertPlace) {
     var currentButton;
     var indexOfCard;
     if (previousPinButton) {
@@ -43,7 +41,7 @@
           removeCard();
         });
         document.addEventListener('keydown', documentEscKeyHandler);
-        mapFiltersContainer.before(currentCard);
+        insertPlace.before(currentCard);
         break;
       }
     }

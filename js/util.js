@@ -17,6 +17,18 @@
     }
   };
 
+  var enableFormElements = function (collection) {
+    collection.forEach(function (item) {
+      item.disabled = false;
+    });
+  };
+
+  var disableFormElements = function (collection) {
+    collection.forEach(function (item) {
+      item.disabled = true;
+    });
+  };
+
   var debounce = function (cb) {
     var lastTimeout = null;
 
@@ -34,6 +46,8 @@
   window.util = {
     enterEvent: elementEnterPressHadler,
     escEvent: elementEscPressHadler,
-    debounce: debounce
+    debounce: debounce,
+    enableFormElements: enableFormElements,
+    disableFormElements: disableFormElements
   };
 })();

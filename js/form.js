@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var INVALID_BOX_SHADOW = '0 0 0 5px red';
   var typeToMinPriceMap = {
     palace: 10000,
     flat: 1000,
@@ -13,10 +14,6 @@
     '3': [1, 2, 3],
     '100': [0]
   };
-  var map = document.querySelector('.map');
-  var mapForm = map.querySelector('.map__filters');
-  var mapFormInputs = mapForm.querySelectorAll('.map__filters-container input');
-  var mapFormSelects = mapForm.querySelectorAll('.map__filters-container select');
   var adForm = document.querySelector('.ad-form');
   var adFormFieldsets = adForm.querySelectorAll('.ad-form fieldset');
   var adFormTitleInput = adForm.querySelector('#title');
@@ -31,29 +28,9 @@
     adFormTitleInput,
     adFormPriceInput
   ];
-
-  var disableFormElements = function (collection) {
-    collection.forEach(function (item) {
-      item.disabled = true;
-    });
-  };
-
-  var enableFormElements = function (collection) {
-    collection.forEach(function (item) {
-      item.disabled = false;
-    });
-  };
-
-  var disableMapForm = function () {
-    disableFormElements(mapFormInputs);
-    disableFormElements(mapFormSelects);
-    window.filter.disableChangeListener();
-  };
-
-  var enableMapForm = function () {
-    enableFormElements(mapFormInputs);
-    enableFormElements(mapFormSelects);
-    window.filter.enableChangeListener();
+  var TimeAction = {
+    IN: 'in',
+    OUT: 'out'
   };
 
   var setLinkBetweenTypeAndPrice = function () {
@@ -62,7 +39,7 @@
   };
 
   var setLinkBetweenTime = function (action) {
-    if (action === 'in') {
+    if (action === TimeAction.IN) {
       adFormTimeOutSelect.value = adFormTimeInSelect.value;
     } else {
       adFormTimeInSelect.value = adFormTimeOutSelect.value;
@@ -93,7 +70,7 @@
   };
 
   var showInvalidField = function (field) {
-    field.style.boxShadow = '0 0 0 5px red';
+    field.style.boxShadow = INVALID_BOX_SHADOW;
   };
 
   var resetInvalidField = function (field) {
@@ -106,7 +83,7 @@
 
   var activateForm = function () {
     adForm.classList.remove('ad-form--disabled');
-    enableFormElements(adFormFieldsets);
+    window.util.enableFormElements(adFormFieldsets);
     setAddress(true);
     window.photo.enableUserPicAdjunction();
     window.photo.enableHousingPicAdjunction();
@@ -114,15 +91,13 @@
 
   var deactivateForm = function () {
     adForm.classList.add('ad-form--disabled');
-    disableMapForm();
-    disableFormElements(adFormFieldsets);
+    window.util.disableFormElements(adFormFieldsets);
     window.photo.disableUserPicAdjunction();
     window.photo.disableHousingPicAdjunction();
   };
 
   var makePrimarySettings = function () {
-    disableMapForm();
-    disableFormElements(adFormFieldsets);
+    window.util.disableFormElements(adFormFieldsets);
     setAddress(false);
     adFormAddressInput.setAttribute('readonly', '');
     setLinkBetweenTypeAndPrice();
@@ -142,27 +117,31 @@
   });
 
   adFormTimeInSelect.addEventListener('input', function () {
-    setLinkBetweenTime('in');
+    setLinkBetweenTime(TimeAction.IN);
   });
 
   adFormTimeOutSelect.addEventListener('input', function () {
-    setLinkBetweenTime('out');
+    setLinkBetweenTime(TimeAction.OUT);
   });
 
   adFormRoomNumberSelect.addEventListener('input', function () {
     setLinkBetweenRoomsAndGuests();
   });
 
-  var adFormSuccessSubmitHandler = function () {
-    window.message.show('success');
+  var resetFormCustom = function () {
     adForm.reset();
     setAddress(false);
     setLinkBetweenRoomsAndGuests();
     setLinkBetweenTypeAndPrice();
   };
 
+  var adFormSuccessSubmitHandler = function () {
+    window.message.show('success');
+    resetFormCustom();
+  };
+
   var adFormErrorSubmitHandler = function (message) {
-    window.message.show('error', message);
+    window.message.show('error', message, false);
   };
 
   adForm.addEventListener('change', function (evt) {
@@ -175,14 +154,12 @@
 
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.ajax.sendForm(new FormData(adForm), adFormSuccessSubmitHandler, adFormErrorSubmitHandler);
+    window.ajax.sendData(new FormData(adForm), adFormSuccessSubmitHandler, adFormErrorSubmitHandler);
   });
 
   adForm.addEventListener('reset', function () {
     deactivateForm();
-    mapForm.reset();
     window.map.deactivate();
-    window.main.deactivatePage();
     validationFields.forEach(function (item) {
       if (item.hasAttribute('style')) {
         resetInvalidField(item);
@@ -193,16 +170,13 @@
   var adFormResetButton = adForm.querySelector('.ad-form__reset');
   adFormResetButton.addEventListener('click', function (evt) {
     evt.preventDefault();
-    adForm.reset();
-    setAddress(false);
-    setLinkBetweenRoomsAndGuests();
-    setLinkBetweenTypeAndPrice();
+    resetFormCustom();
   });
+
+  makePrimarySettings();
 
   window.form = {
     activate: activateForm,
-    enableMapForm: enableMapForm,
-    makePrimarySettings: makePrimarySettings,
     setAddress: setAddress
   };
 })();

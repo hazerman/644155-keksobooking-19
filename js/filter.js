@@ -2,14 +2,12 @@
 
 (function () {
   var MAX_PINS = 5;
-  var map = document.querySelector('.map');
-  var mapForm = map.querySelector('.map__filters');
-  var filterType = mapForm.querySelector('#housing-type');
-  var filterPrice = mapForm.querySelector('#housing-price');
-  var filterRoom = mapForm.querySelector('#housing-rooms');
-  var filterGuest = mapForm.querySelector('#housing-guests');
-  var filterFeature = mapForm.querySelector('#housing-features');
-  var defaultValue = 'any';
+  var DEFAULT_VALUE = 'any';
+  var filterType = document.querySelector('#housing-type');
+  var filterPrice = document.querySelector('#housing-price');
+  var filterRoom = document.querySelector('#housing-rooms');
+  var filterGuest = document.querySelector('#housing-guests');
+  var filterFeature = document.querySelector('#housing-features');
   var rangeToCostMap = {
     'middle': [
       10000,
@@ -24,12 +22,18 @@
       +Infinity
     ]
   };
+  var FilterBy = {
+    TYPE: 'type',
+    PRICE: 'price',
+    ROOMS: 'rooms',
+    GUESTS: 'guests'
+  };
 
   var isFilteredBySelect = function (item, flag, value) {
-    if (value === defaultValue) {
+    if (value === DEFAULT_VALUE) {
       return true;
     }
-    if (flag === 'price') {
+    if (flag === FilterBy.PRICE) {
       return item.offer[flag] >= rangeToCostMap[value][0] && item.offer[flag] <= rangeToCostMap[value][1];
     }
     if (typeof item.offer[flag] === 'number') {
@@ -56,10 +60,10 @@
   var filtrate = function (array) {
     var filteredArray = [];
     for (var i = 0; i < array.length; i++) {
-      var isFiltered = isFilteredBySelect(array[i], 'type', filterType.value) &&
-      isFilteredBySelect(array[i], 'price', filterPrice.value) &&
-      isFilteredBySelect(array[i], 'rooms', filterRoom.value) &&
-      isFilteredBySelect(array[i], 'guests', filterGuest.value) &&
+      var isFiltered = isFilteredBySelect(array[i], FilterBy.TYPE, filterType.value) &&
+      isFilteredBySelect(array[i], FilterBy.PRICE, filterPrice.value) &&
+      isFilteredBySelect(array[i], FilterBy.ROOMS, filterRoom.value) &&
+      isFilteredBySelect(array[i], FilterBy.GUESTS, filterGuest.value) &&
       isFilteredByFeature(array[i]);
       if (isFiltered) {
         filteredArray.push(array[i]);
@@ -71,22 +75,8 @@
     return filteredArray;
   };
 
-  var renderFiltratedPins = function () {
-    window.render.showPins(filtrate(window.map.cardObjects));
-  };
-
-  var mapFormChangeHandler = window.util.debounce(renderFiltratedPins);
-
-  var enableFilterListener = function () {
-    mapForm.addEventListener('change', mapFormChangeHandler);
-  };
-
-  var disableFilterListener = function () {
-    mapForm.removeEventListener('change', mapFormChangeHandler);
-  };
 
   window.filter = {
-    enableChangeListener: enableFilterListener,
-    disableChangeListener: disableFilterListener
+    filtrate: filtrate
   };
 })();

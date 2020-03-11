@@ -1,20 +1,7 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
-  var mapPinsArea = map.querySelector('.map__pins');
-  var AreaLimit = {
-    X: {
-      MIN: 0,
-      MAX: mapPinsArea.offsetWidth
-    },
-    Y: {
-      MIN: 130,
-      MAX: 630
-    }
-  };
-
-  var activate = function (element, width, height, callback) {
+  var activate = function (areaLimit, element, width, height, callback) {
     element.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
       var halfWidth = Math.round(width / 2);
@@ -38,11 +25,11 @@
 
         var getPositionStyle = function (axis, newStylePosition, side) {
           var position;
-          if (newStylePosition < (AreaLimit[axis].MIN - side)) {
-            position = (AreaLimit[axis].MIN - side) + 'px';
+          if (newStylePosition < (areaLimit[axis].MIN - side)) {
+            position = (areaLimit[axis].MIN - side) + 'px';
             document.removeEventListener('mousemove', mouseMoveHandler);
-          } else if (newStylePosition > (AreaLimit[axis].MAX - side)) {
-            position = (AreaLimit[axis].MAX - side) + 'px';
+          } else if (newStylePosition > (areaLimit[axis].MAX - side)) {
+            position = (areaLimit[axis].MAX - side) + 'px';
             document.removeEventListener('mousemove', mouseMoveHandler);
           } else {
             position = newStylePosition + 'px';
